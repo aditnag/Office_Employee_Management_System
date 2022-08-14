@@ -1,6 +1,8 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from .models import Employee, Role, Department
 from datetime import datetime
+from django.urls import reverse
+
 
 # Create your views here.
 def index(request):
@@ -20,16 +22,20 @@ def add_emp(request):
     if request.method == 'POST':
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
-        salary = request.POST['salary']
-        dept = request.POST['dept']
-        bonus = request.POST['bonus']
-        role = request.POST['role']
-        phno = request.POST['phone']
-        new_emp = Employee(first_name=first_name, last_name=last_name, salary=salary, bonus=bonus, dept_id=dept, role_id=role, phno=phno, hire_date=datetime.now())
+        salary = int(request.POST['salary'])
+        dept = int(request.POST['dept'])
+        bonus = int(request.POST['bonus'])
+        role = int(request.POST['role'])
+        phone = int(request.POST['phone'])
+        new_emp = Employee(first_name=first_name, last_name=last_name, salary=salary, bonus=bonus, dept_id=dept,
+                           role_id=role, phone=phone, hire_date=datetime.now())
         new_emp.save()
         return HttpResponse("Employee added successfully!")
+        # return HttpResponseRedirect(reverse('emp_app:index', args=(new_emp.id,)))
+    elif request.method == 'GET':
+        return render(request, 'emp_app/add_emp.html')
     else:
-        return render(request, 'add_emp.html')
+        return HttpResponse("An Exception Occurred! Employee has not been added")
 
 
 def remove_emp(request):
